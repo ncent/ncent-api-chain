@@ -11,8 +11,8 @@
 #
 # Happy Coding!
 
-service: ncent-api # NOTE: update this with your service name
-app: ncent-api
+service: ncent-api-chain # NOTE: update this with your service name
+app: ncent-api-chain
 tenant: ncntdev
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -25,18 +25,18 @@ provider:
   region: ${opt:region, 'us-west-1'}
   vpc:
     securityGroupIds:
-      - ${ssm:/ncnt/development/securitygroup} # sg-03e1b070d826d2767
+    - ${ssm:/ncnt-chain/development/securitygroup} # sg-03e1b070d826d2767
     subnetIds:
-      - ${ssm:/ncnt/development/subnet/1} # subnet-00173f7ae2ead86ec
-      - ${ssm:/ncnt/development/subnet/2} # subnet-0e1d69b5214c618df
+    - ${ssm:/ncnt-chain/development/subnet/1} # subnet-00173f7ae2ead86ec
+    - ${ssm:/ncnt-chain/development/subnet/2} # subnet-0e1d69b5214c618df
   #    Define function environment variables here
   environment:
-    database_url: ${ssm:/ncnt/development/database/url~true}
-    database_driver: ${ssm:/ncnt/development/database/driver}
-    database_user: ${ssm:/ncnt/development/database/user}
-    database_password: ${ssm:/ncnt/development/database/password~true}
-    bugsnag_api_key: ${ssm:/ncnt/development/bugsnag/apikey~true}
-    release_stage: ${ssm:/ncnt/development/release_stage}
+    database_url: ${ssm:/ncnt-chain/development/database/url~true}
+    database_driver: ${ssm:/ncnt-chain/development/database/driver}
+    database_user: ${ssm:/ncnt-chain/development/database/user}
+    database_password: ${ssm:/ncnt-chain/development/database/password~true}
+    bugsnag_api_key: ${ssm:/ncnt-chain/development/bugsnag/apikey~true}
+    release_stage: ${ssm:/ncnt-chain/development/release_stage}
   #      database_url: jdbc:mysql://localhost:3306/ncnt
   #      database_driver: com.mysql.jdbc.Driver
   #      database_user: root
@@ -68,7 +68,7 @@ provider:
 
 # you can add packaging information here
 package:
-  artifact: target/ncent-api-dev-jar-with-dependencies.jar
+  artifact: target/ncent-api-chain-dev-jar-with-dependencies.jar
   excludeDevDependencies: false
 
 functions:
@@ -123,10 +123,10 @@ functions:
   user_balances:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /user/balances
-          method: get
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user/balances
+        method: get
 
   token_get:
     handler: kotlinserverless.framework.models.Handler
@@ -224,21 +224,14 @@ functions:
         path: /challenges
         method: get
 
-#  challenge_invalidate:
-#    handler: kotlinserverless.framework.models.Handler
-#    events:
-#    - schedule: rate(10 minutes)
-#    - http:
-#        path: /challenge/invalidate
-#        method: put
-#
-#  challenge_validate:
-#    handler: kotlinserverless.framework.models.Handler
-#    events:
-#    - schedule: rate(10 minutes)
-#    - http:
-#        path: /challenge/validate
-#        method: put
+  challenge_expire:
+    handler: kotlinserverless.framework.models.Handler
+    events:
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/expire
+        method: put
+
 
   challenge_complete:
     handler: kotlinserverless.framework.models.Handler
@@ -259,18 +252,18 @@ functions:
   challenge_balances:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /challenge/balances
-          method: get
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/balances
+        method: get
 
   challenge_activate:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /challenge/activate
-          method: put
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/activate
+        method: put
 
   challenge_chains:
     handler: kotlinserverless.framework.models.Handler

@@ -11,8 +11,8 @@
 #
 # Happy Coding!
 
-service: ncent-api # NOTE: update this with your service name
-app: ncent-api
+service: ncent-api-chain # NOTE: update this with your service name
+app: ncent-api-chain
 tenant: ncntdev
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -25,18 +25,18 @@ provider:
   region: ${opt:region, 'us-west-1'}
   vpc:
     securityGroupIds:
-    - ${ssm:/ncnt/production/securitygroup} # sg-007cab286661ef1e9
+    - ${ssm:/ncnt-chain/production/securitygroup} # sg-03e1b070d826d2767
     subnetIds:
-    - ${ssm:/ncnt/production/subnet/1} # subnet-05713e4c4a5b16bae
-    - ${ssm:/ncnt/production/subnet/2} # subnet-053aaa3f57d64c76e
+    - ${ssm:/ncnt-chain/production/subnet/1} # subnet-00173f7ae2ead86ec
+    - ${ssm:/ncnt-chain/production/subnet/2} # subnet-0e1d69b5214c618df
   #    Define function environment variables here
   environment:
-    database_url: ${ssm:/ncnt/production/database/url~true}
-    database_driver: ${ssm:/ncnt/production/database/driver}
-    database_user: ${ssm:/ncnt/production/database/user}
-    database_password: ${ssm:/ncnt/production/database/password~true}
-    bugsnag_api_key: ${ssm:/ncnt/production/bugsnag/apikey~true}
-    release_stage: ${ssm:/ncnt/production/release_stage}
+    database_url: ${ssm:/ncnt-chain/production/database/url~true}
+    database_driver: ${ssm:/ncnt-chain/production/database/driver}
+    database_user: ${ssm:/ncnt-chain/production/database/user}
+    database_password: ${ssm:/ncnt-chain/production/database/password~true}
+    bugsnag_api_key: ${ssm:/ncnt-chain/production/bugsnag/apikey~true}
+    release_stage: ${ssm:/ncnt-chain/production/release_stage}
   #      database_url: jdbc:mysql://localhost:3306/ncnt
   #      database_driver: com.mysql.jdbc.Driver
   #      database_user: root
@@ -68,201 +68,201 @@ provider:
 
 # you can add packaging information here
 package:
-  artifact: target/ncent-api-dev-jar-with-dependencies.jar
+  artifact: target/ncent-api-chain-dev-jar-with-dependencies.jar
   excludeDevDependencies: false
 
 functions:
   user:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /user_test/hello
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user_test/hello
+        method: get
 
   dbhealth:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /dbhealth/health
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /dbhealth/health
+        method: get
 
   user_get:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /user
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user
+        method: get
 
   user_create:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /user
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user
+        method: post
+
+  user_delete:
+    handler: kotlinserverless.framework.models.Handler
+    events:
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user
+        method: delete
 
   user_reset:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /user/reset
-          method: patch
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user/reset
+        method: patch
 
   user_balances:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /user/balances
-          method: get
+    - schedule: rate(10 minutes)
+    - http:
+        path: /user/balances
+        method: get
 
   token_get:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /token
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /token
+        method: get
 
   tokens_get:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /tokens
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /tokens
+        method: get
 
   token_create:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /token
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /token
+        method: post
 
   token_transfer:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /token/transfer
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /token/transfer
+        method: post
 
   reward_pool:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /reward/pool
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /reward/pool
+        method: post
 
   reward_create:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /reward
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /reward
+        method: post
 
   completion_create:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /completion
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /completion
+        method: post
 
   completion_complete:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /completion
-          method: put
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /completion
+        method: put
 
   transaction:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /transaction
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /transaction
+        method: post
 
   challenge_create:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /challenge
-          method: post
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge
+        method: post
 
   challenge_get:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /challenge
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge
+        method: get
 
   challenges_get:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /challenges
-          method: get
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenges
+        method: get
 
-#  challenge_invalidate:
-#    handler: kotlinserverless.framework.models.Handler
-#    events:
-#      - http:
-#          path: /challenge/invalidate
-#          method: put
-#      - schedule: rate(10 minutes)
-#
-#  challenge_validate:
-#    handler: kotlinserverless.framework.models.Handler
-#    events:
-#      - http:
-#          path: /challenge/validate
-#          method: put
-#      - schedule: rate(10 minutes)
+  challenge_expire:
+    handler: kotlinserverless.framework.models.Handler
+    events:
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/expire
+        method: put
 
   challenge_complete:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /challenge/complete
-          method: put
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/complete
+        method: put
 
   challenge_share:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - http:
-          path: /challenge/share
-          method: put
-      - schedule: rate(10 minutes)
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/share
+        method: put
 
   challenge_balances:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /challenge/balances
-          method: get
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/balances
+        method: get
 
   challenge_activate:
     handler: kotlinserverless.framework.models.Handler
     events:
-      - schedule: rate(10 minutes)
-      - http:
-          path: /challenge/activate
-          method: put
+    - schedule: rate(10 minutes)
+    - http:
+        path: /challenge/activate
+        method: put
 
   challenge_chains:
     handler: kotlinserverless.framework.models.Handler
