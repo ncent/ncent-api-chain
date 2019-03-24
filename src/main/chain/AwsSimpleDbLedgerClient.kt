@@ -3,11 +3,13 @@ package main.chain
 import framework.chain.*
 import main.daos.CryptoKeyPair
 import main.daos.Transaction
+import main.helpers.TransactionConstructor
+import main.helpers.TransactionValidator
 
 class AwsSimpleDbLedgerClient<T: Transaction>(
-    override val constructor: Constructor<T>,
-    override val ledger: Ledger<T>,
-    override val validator: Validator<T>
+    override val constructor: TransactionConstructor<T>,
+    override val ledger: AwsSimpleDbLedger<T>,
+    override val validator: TransactionValidator<T>
 ) : ReadableLedgerClient<T>, WritableLedgerClient<T> {
 
     override fun read(address: String, vararg kvp: Pair<String, String>): T {
