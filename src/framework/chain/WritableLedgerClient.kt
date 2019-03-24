@@ -1,18 +1,8 @@
 package framework.chain
 
 import main.daos.CryptoKeyPair
-import main.daos.Transaction
 
-abstract class WritableLedger<
-        T: Transaction,
-        V: Validator<T>,
-        C: Constructor<T>,
-        L: Ledger<T>
->(
-    private val validator: V,
-    private val constructor: C,
-    private val ledger: L
-) {
+interface WritableLedgerClient<T>: LedgerClient<T> {
     // Write a new transaction to the ledger
     // This will get the latest state of the particular transaction type
     // and validate the transaction is correct.

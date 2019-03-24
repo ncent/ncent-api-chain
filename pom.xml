@@ -24,11 +24,6 @@
             <url>https://dl.bintray.com/spekframework/spek-dev</url>
         </repository>
         <repository>
-            <id>exposed</id>
-            <name>exposed</name>
-            <url>https://dl.bintray.com/kotlin/exposed</url>
-        </repository>
-        <repository>
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -130,12 +125,6 @@
        </dependency>
 
        <dependency>
-           <groupId>org.jetbrains.exposed</groupId>
-           <artifactId>exposed</artifactId>
-           <version>0.10.5</version>
-       </dependency>
-
-       <dependency>
            <groupId>com.h2database</groupId>
            <artifactId>h2</artifactId>
            <version>1.4.197</version>
@@ -181,6 +170,13 @@
            <artifactId>bugsnag</artifactId>
            <version>[3.0,4.0)</version>
        </dependency>
+
+       <dependency>
+           <groupId>com.amazonaws</groupId>
+           <artifactId>aws-java-sdk-simpledb</artifactId>
+           <version>1.11.524</version>
+       </dependency>
+
 
    </dependencies>
 

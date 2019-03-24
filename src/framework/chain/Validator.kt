@@ -1,12 +1,8 @@
 package framework.chain
 
-import main.daos.Transaction
-
-interface Validator<T: Transaction> {
+interface Validator<T> {
 
     // Used to validate a particular transaction type
     // Each transaction type should have it's own validator
-    fun validate(obj: T) {
-        throw NotImplementedError()
-    }
+    fun validate(obj: T)
 }

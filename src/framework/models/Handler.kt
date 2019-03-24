@@ -1,19 +1,15 @@
 package kotlinserverless.framework.models
 
+import com.amazonaws.auth.PropertiesCredentials
 import kotlinserverless.framework.dispatchers.RequestDispatcher
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.simpledb.AmazonSimpleDBClient
+import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
-import main.daos.*
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
-import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.sql.Connection
 
 open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
 
@@ -21,20 +17,14 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
 
   constructor() {
     BasicConfigurator.configure()
-    connectToDatabase()
-    buildTables()
+    connectToLedger()
   }
 
   constructor(test: Boolean = false) {
     if(!test!!) {
       BasicConfigurator.configure()
     }
-    connectToDatabase()
-    buildTables(test)
-  }
-
-  fun getDbName(): String {
-    return db.url
+    connectToLedger()
   }
 
   override fun handleRequest(input: Map<String, Any>, context: Context): ApiGatewayResponse {
@@ -69,8 +59,7 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
   }
 
   companion object {
-    lateinit var db: Database
-    lateinit var connection: Connection
+    lateinit var ledger: AmazonSimpleDBClient
 
     inline fun build(block: ApiGatewayResponse.Builder.() -> Unit) = ApiGatewayResponse.Builder().apply(block).build()
     private val LOG = LogManager.getLogger(this::class.java)!!
@@ -86,33 +75,6 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
       return bugsnagInstance!!
     }
 
-    private val TABLES = arrayOf(
-      Healthchecks,
-      Users,
-      CryptoKeyPairs,
-      ApiCreds,
-      UserAccounts,
-      Actions,
-      Transactions,
-      Metadatas,
-      TransactionsMetadata,
-      Tokens,
-      TokenTypes,
-      PrerequisiteChallenge,
-      Rewards,
-      RewardPools,
-      RewardTypes,
-      RewardsToTransactions,
-      RewardsMetadata,
-      CompletionCriterias,
-      Challenges,
-      ChallengeSettings,
-      SubChallenges,
-      ChallengeToSubChallenges,
-      UsersMetadata,
-      ChallengeSettingsMetadata
-    )
-
     fun log(e: Throwable?, message: String?) {
       if(e != null) {
         LOG.error(message, e)
@@ -122,61 +84,15 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
       }
     }
 
-    fun connectAndBuildTables(): Database {
-      db = connectToDatabase()
-      dropTables()
-      buildTables()
-      return db
-    }
-
-    private fun buildTables(test: Boolean = false) {
-      transaction {
-        SchemaUtils.create(*TABLES)
-        if(!test) {
-          try {
-            Healthchecks.insertIgnore {
-              it[status] = "database_healthy"
-              it[message] = "connected to database."
-            }
-            Healthchecks.insertIgnore {
-              it[status] = "database_unhealthy"
-              it[message] = "failed to connect to database."
-            }
-          } catch(e: ExposedSQLException) {
-
-          }
-        }
-      }
-    }
-
-    fun connectToDatabase(): Database {
+    // TODO figure out how to do this correctly
+    fun connectToLedger(): AmazonSimpleDBClient {
       try {
-        db = Database.connect(
-                System.getenv("database_url") ?: "jdbc:h2:mem:test;MODE=MySQL",
-                driver = System.getenv("database_driver") ?: "org.h2.Driver",
-                user = System.getenv("database_user") ?: "",
-                password = System.getenv("database_password") ?: ""
-        )
-        connection = db.connector.invoke()
+        ledger = AmazonSimpleDBClient(PropertiesCredentials(this.javaClass.getResourceAsStream("AwsCredentials.properties")))
+        ledger.createDomain(CreateDomainRequest("transaction"))
       } catch(e: Exception) {
         println(e.message)
       }
-      return db
-    }
-
-    fun disconnectFromDatabase() {
-      connection.close()
-    }
-
-    fun disconnectAndDropTables() {
-      dropTables()
-      disconnectFromDatabase()
-    }
-
-    private fun dropTables() {
-      transaction {
-        SchemaUtils.drop(*TABLES)
-      }
+      return ledger
     }
   }
 }

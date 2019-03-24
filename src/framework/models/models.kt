@@ -4,9 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import framework.models.BaseIntEntity
 import framework.models.BaseIntIdTable
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
