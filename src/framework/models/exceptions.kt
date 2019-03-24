@@ -41,6 +41,7 @@ class NotFoundException(override var message: String? = "Not Found") :
 class ForbiddenException(override var message: String? = "Operation forbidden") :
         MyException(403, message)
 
+class MyErrorException(override var message: String? = "Generic error"): MyException(500, message)
 class SoAErrorException(override var message: String? = "Generic error"): MyException(500, message)
 class SoAFailureException(override var message: String? = "Generic failure"): MyException(500, message)
 class UnauthorizedError(override var message: String? = "Invalid api credentials"): MyException(401, message)

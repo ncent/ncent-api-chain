@@ -8,6 +8,11 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
+import main.chain.AwsSimpleDbLedger
+import main.chain.AwsSimpleDbLedgerClient
+import main.chain.AwsTransactionConstructor
+import main.chain.TransactionValidator
+import main.daos.Transaction
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
 
@@ -59,7 +64,8 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
   }
 
   companion object {
-    lateinit var ledger: AmazonSimpleDBClient
+    lateinit var db: AmazonSimpleDBClient
+    lateinit var ledger: AwsSimpleDbLedgerClient<Transaction>
 
     inline fun build(block: ApiGatewayResponse.Builder.() -> Unit) = ApiGatewayResponse.Builder().apply(block).build()
     private val LOG = LogManager.getLogger(this::class.java)!!
@@ -85,14 +91,14 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
     }
 
     // TODO figure out how to do this correctly
-    fun connectToLedger(): AmazonSimpleDBClient {
+    fun connectToLedger() {
       try {
-        ledger = AmazonSimpleDBClient(PropertiesCredentials(this.javaClass.getResourceAsStream("AwsCredentials.properties")))
-        ledger.createDomain(CreateDomainRequest("transaction"))
+        db = AmazonSimpleDBClient(PropertiesCredentials(this.javaClass.getResourceAsStream("AwsCredentials.properties")))
+        db.createDomain(CreateDomainRequest("transaction"))
+        ledger = AwsSimpleDbLedgerClient()
       } catch(e: Exception) {
         println(e.message)
       }
-      return ledger
     }
   }
 }

@@ -1,5 +1,6 @@
 package main.daos
 
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.*
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ReferenceOption
@@ -27,6 +28,14 @@ class Transaction(id: EntityID<Int>) : BaseIntEntity(id, Transactions) {
     var action by Action referencedOn Transactions.action
     var previousTransaction by Transaction optionalReferencedOn Transactions.previousTransaction
     var metadatas by Metadata via TransactionsMetadata
+
+    fun getQuery(): String {
+        throw NotImplementedError()
+    }
+
+    fun getAttributes(): List<ReplaceableAttribute> {
+        throw NotImplementedError()
+    }
 
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()

@@ -1,4 +1,4 @@
-package main.helpers
+package main.chain
 
 import framework.chain.Validator
 import main.daos.Transaction
