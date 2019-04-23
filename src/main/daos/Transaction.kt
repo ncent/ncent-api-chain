@@ -2,9 +2,6 @@ package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.*
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.Table
 
 /**
  * Transaction represents the data that records any changes related to any
@@ -20,21 +17,26 @@ import org.jetbrains.exposed.sql.Table
  * @property metadatas Optionally can be used to keep track of additional data. (ex: max shares)
  * example being: challenge sharing (providence chain)
  */
-class Transaction(id: EntityID<Int>) : BaseIntEntity(id, Transactions) {
-    companion object : BaseIntEntityClass<Transaction>(Transactions)
-
-    var from by Transactions.from
-    var to by Transactions.to
-    var action by Action referencedOn Transactions.action
-    var previousTransaction by Transaction optionalReferencedOn Transactions.previousTransaction
-    var metadatas by Metadata via TransactionsMetadata
+class Transaction(
+    val from: String,
+    val to: String,
+    val action: ActionNamespace,
+    val previousTransaction: String? = null,
+    val metadatas: List<MetadatasNamespace>? = null
+): BaseEntity() {
 
     fun getQuery(): String {
         throw NotImplementedError()
     }
 
-    fun getAttributes(): List<ReplaceableAttribute> {
-        throw NotImplementedError()
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        var list = super.getAttributes()
+        list.add(ReplaceableAttribute("from", from, true))
+        list.add(ReplaceableAttribute("to", to, true))
+        list.addAll(action.getAttributes())
+        if(metadatas != null)
+            list.addAll(metadatas.map { it.getAttributes() }.flatten())
+        return list
     }
 
     override fun toMap(): MutableMap<String, Any?> {
@@ -42,67 +44,20 @@ class Transaction(id: EntityID<Int>) : BaseIntEntity(id, Transactions) {
         map.put("from", from)
         map.put("to", to)
         map.put("action", action.toMap())
-        map.put("previousTransactionId", previousTransaction?.idValue ?: "")
-        map.put("metadatas", metadatas.map { it.toMap() })
+        if(previousTransaction != null)
+            map.put("previousTransactionId", previousTransaction)
+        if(metadatas != null)
+            map.put("metadatas", metadatas.map { it.toMap() })
         return map
     }
-}
-
-object Transactions : BaseIntIdTable("transactions") {
-    val from = varchar("from", 256)
-    val to = varchar("to", 256).nullable()
-    val action = reference("action", Actions, onDelete = ReferenceOption.CASCADE)
-    val previousTransaction = optReference("previous_transaction", Transactions, onDelete = ReferenceOption.CASCADE)
-}
-
-object TransactionsMetadata : BaseIntIdTable("transactions_to_metadatas") {
-    val transaction = reference("transaction_to_metadatas", Transactions, onDelete = ReferenceOption.CASCADE)
-    val metadata = reference("metadata_to_transaction", Metadatas, onDelete = ReferenceOption.CASCADE)
 }
 
 data class TransactionNamespace(val from: String?=null, val to: String?=null, val action: ActionNamespace?=null, val previousTransaction: Int?=null, val metadatas: Array<MetadatasNamespace>? = null)
 
-class TransactionList(val transactions: List<Transaction>): BaseObject {
-    override fun toMap(): MutableMap<String, Any?> {
-        var map = mutableMapOf<String, Any?>()
-        map.put("transactions", transactions.map { it.toMap() })
-        return map
-    }
-}
-
 data class TransactionNamespaceList(val transactions: List<TransactionNamespace>)
-
-class TransactionToShare(val transaction: Transaction, val shares: Int): BaseObject {
-    override fun toMap(): MutableMap<String, Any?> {
-        var map = mutableMapOf<String, Any?>()
-        map.put("transactions", transaction.toMap())
-        map.put("shares", shares)
-        return map
-    }
-}
 
 data class TransactionToShareNamespace(val transactions: TransactionNamespace, val shares: Int)
 
-class ShareTransactionList(val transactionsToShares: List<TransactionToShare>): BaseObject {
-    override fun toMap(): MutableMap<String, Any?> {
-        var map = mutableMapOf<String, Any?>()
-        map.put("transactionsToShares", transactionsToShares.map { it.toMap() })
-        return map
-    }
-}
-
 data class ShareTransactionListNamespace(val transactionsToShares: List<TransactionToShareNamespace>)
-
-class TransactionWithNewUser(
-    val transactions: List<Transaction>,
-    val newUser: NewUserAccount? = null
-): BaseObject {
-    override fun toMap(): MutableMap<String, Any?> {
-        var map = mutableMapOf<String, Any?>()
-        map.put("transactions", transactions.map { it.toMap() })
-        map.put("newUser", newUser?.toMap())
-        return map
-    }
-}
 
 data class TransactionWithNewUserNamespace(val transactions: List<TransactionNamespace>, val newUser: NewUserAccountNamespace? = null)

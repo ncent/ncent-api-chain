@@ -1,11 +1,7 @@
 package main.daos
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import framework.models.BaseIntEntity
-import framework.models.BaseIntEntityClass
-import framework.models.BaseIntIdTable
-import org.jetbrains.exposed.dao.EntityID
-import kotlin.reflect.full.primaryConstructor
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
+import framework.models.BaseNamespace
 
 /**
  * Metadata will be a key-value store
@@ -14,23 +10,22 @@ import kotlin.reflect.full.primaryConstructor
  * @property key
  * @property value
  */
-class Metadata(id: EntityID<Int>) : BaseIntEntity(id, Metadatas) {
-    companion object : BaseIntEntityClass<Metadata>(Metadatas)
 
-    var key by Metadatas.key
-    var value by Metadatas.value
-
+data class MetadatasNamespace(
+    val key: String,
+    val value: String
+): BaseNamespace {
     override fun toMap(): MutableMap<String, Any?> {
-        var map = super.toMap()
-        map.put("key", key)
-        map.put("value", value)
+        val map = mutableMapOf<String, Any?>()
+        map["key"] = key
+        map["value"] = value
         return map
     }
-}
 
-object Metadatas : BaseIntIdTable("metadatas") {
-    val key = varchar("md_key", 256)
-    val value = text("md_value")
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        return mutableListOf(
+            ReplaceableAttribute("key", key, true),
+            ReplaceableAttribute("value", value, true)
+        )
+    }
 }
-
-data class MetadatasNamespace(val key: String, val value: String)

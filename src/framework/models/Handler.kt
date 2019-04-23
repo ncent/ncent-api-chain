@@ -8,10 +8,7 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
-import main.chain.AwsSimpleDbLedger
 import main.chain.AwsSimpleDbLedgerClient
-import main.chain.AwsTransactionConstructor
-import main.chain.TransactionValidator
 import main.daos.Transaction
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
