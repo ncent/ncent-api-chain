@@ -10,17 +10,13 @@ fun currentUtc(): DateTime = DateTime.now(DateTimeZone.UTC)
 // TODO: Change how we generate the UUID
 abstract class BaseEntity(
     val id: String = UUID.randomUUID().toString(),
-    val createdAt: DateTime = currentUtc(),
-    val updatedAt: DateTime? = null,
-    val deletedAt: DateTime? = null
+    val createdAt: DateTime = currentUtc()
 ): BaseObject {
 
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         return mutableListOf(
             ReplaceableAttribute("id", id, true),
-            ReplaceableAttribute("createdAt", createdAt.toString(), true),
-            ReplaceableAttribute("updatedAt", updatedAt?.toString(), true),
-            ReplaceableAttribute("deletedAt", deletedAt?.toString(), true)
+            ReplaceableAttribute("createdAt", createdAt.toString(), true)
         )
     }
 
@@ -28,10 +24,25 @@ abstract class BaseEntity(
         val map = mutableMapOf<String, Any?>()
         map["id"] = id
         map["createdAt"] = createdAt.toString()
-        if(updatedAt != null)
-            map["updatedAt"] = updatedAt.toString()
-        if(deletedAt != null)
-            map["deletedAt"] = deletedAt.toString()
+        return map
+    }
+}
+
+abstract class BaseEntityNamespace(
+    val id: String = UUID.randomUUID().toString(),
+    val createdAt: DateTime = currentUtc()
+): BaseNamespace {
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        return mutableListOf(
+            ReplaceableAttribute("id", id, true),
+            ReplaceableAttribute("createdAt", createdAt.toString(), true)
+        )
+    }
+
+    override fun toMap(): MutableMap<String, Any?> {
+        val map = mutableMapOf<String, Any?>()
+        map["id"] = id
+        map["createdAt"] = createdAt.toString()
         return map
     }
 }

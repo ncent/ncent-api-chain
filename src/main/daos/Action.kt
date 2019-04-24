@@ -1,6 +1,7 @@
 package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
+import framework.models.BaseEntityNamespace
 import framework.models.BaseNamespace
 
 /**
@@ -14,7 +15,7 @@ data class ActionNamespace(
     val type: ActionType?=null,
     val dataType: String,
     val dataId: String?=null,
-    val data: BaseNamespace?=null
+    val data: BaseEntityNamespace?=null
 ): BaseNamespace {
     override fun toMap(): MutableMap<String, Any?> {
         val map = mutableMapOf<String, Any?>()
