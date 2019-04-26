@@ -1,9 +1,6 @@
 package main.daos
 
-import framework.models.BaseIntEntity
-import framework.models.BaseIntEntityClass
-import framework.models.BaseIntIdTable
-import framework.models.idValue
+import framework.models.*
 import main.daos.UsersMetadata.primaryKey
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ReferenceOption
@@ -29,8 +26,7 @@ import org.joda.time.DateTime
  * @property maxDepth the maximum depth of the providence chain
  * @property maxNodes the maximum number of nodes in the entire share graph
  */
-class ChallengeSetting(id: EntityID<Int>) : BaseIntEntity(id, ChallengeSettings) {
-    companion object : BaseIntEntityClass<ChallengeSetting>(ChallengeSettings)
+class ChallengeSetting: BaseEntityNamespace {
 
     var name by ChallengeSettings.name
     var description by ChallengeSettings.description

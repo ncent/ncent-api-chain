@@ -1,9 +1,10 @@
 package kotlinserverless.framework.models
 
-import com.amazonaws.auth.PropertiesCredentials
+import com.amazonaws.auth.AWSCredentials
 import kotlinserverless.framework.dispatchers.RequestDispatcher
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.amazonaws.services.simpledb.AmazonSimpleDB
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.bugsnag.Bugsnag
@@ -61,8 +62,8 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
   }
 
   companion object {
-    lateinit var db: AmazonSimpleDBClient
-    lateinit var ledger: AwsSimpleDbLedgerClient<Transaction>
+    lateinit var db: AmazonSimpleDB
+    lateinit var ledgerClient: AwsSimpleDbLedgerClient<Transaction>
 
     inline fun build(block: ApiGatewayResponse.Builder.() -> Unit) = ApiGatewayResponse.Builder().apply(block).build()
     private val LOG = LogManager.getLogger(this::class.java)!!
@@ -90,9 +91,11 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
     // TODO figure out how to do this correctly
     fun connectToLedger() {
       try {
-        db = AmazonSimpleDBClient(PropertiesCredentials(this.javaClass.getResourceAsStream("AwsCredentials.properties")))
+        val clientBuilder = AmazonSimpleDBClient.builder()
+        clientBuilder.credentials = AWSCredentials()
+        db = clientBuilder.build()
         db.createDomain(CreateDomainRequest("transaction"))
-        ledger = AwsSimpleDbLedgerClient()
+        ledgerClient = AwsSimpleDbLedgerClient()
       } catch(e: Exception) {
         println(e.message)
       }

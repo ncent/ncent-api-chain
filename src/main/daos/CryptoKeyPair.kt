@@ -1,48 +1,42 @@
 package main.daos
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import framework.models.BaseIntEntity
-import framework.models.BaseIntEntityClass
-import framework.models.BaseIntIdTable
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
+import framework.models.BaseEntityNamespace
 import main.helpers.EncryptionHelper
-import org.jetbrains.exposed.dao.EntityID
 
 /**
  * Api credentials
  * @property publicKey
  * @property privateKey
  */
-class CryptoKeyPair(id: EntityID<Int>) : BaseIntEntity(id, CryptoKeyPairs) {
-    companion object : BaseIntEntityClass<CryptoKeyPair>(CryptoKeyPairs)
 
-    var publicKey by CryptoKeyPairs.publicKey
-    var _privateKey by CryptoKeyPairs.privateKey
-    var privateKey : String
-        get() = _privateKey
-        set(value) {
-            val encryption = EncryptionHelper.encrypt(value)
-            _privateKey = encryption.first
-            _privateKeySalt = encryption.second
-        }
-    var _privateKeySalt by CryptoKeyPairs.privateKeySalt
+data class CryptoKeyPair(
+    val publicKey: String,
+    private val _privateKey: String
+): BaseEntityNamespace() {
+    override val className = "crypto_key_pair"
+
+    val privateKey: String
+    private val _privateKeySalt: String
+
+    init {
+        val encryption = EncryptionHelper.encrypt(_privateKey)
+        this.privateKey = encryption.first
+        _privateKeySalt = encryption.second
+    }
 
     override fun toMap(): MutableMap<String, Any?> {
-        var map = super.toMap()
-        map.put("publicKey", publicKey)
-        return map
+        return mutableMapOf(Pair("publicKey", publicKey))
+    }
+
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        return mutableListOf(
+            ReplaceableAttribute("publicKey", publicKey, true),
+            ReplaceableAttribute("_privateKey", _privateKey, true),
+            ReplaceableAttribute("_privateKeySalt", _privateKeySalt, true)
+        )
     }
 }
-
-object CryptoKeyPairs : BaseIntIdTable("crypto_key_pairs") {
-    val publicKey = varchar("public_key", 256)
-    val privateKey = varchar("privateKey", 256)
-    val privateKeySalt = varchar("privateKeySalt", 256)
-}
-
-data class CryptoKeyPairNamespace(
-    val publicKey: String,
-    val privateKey: String = ""
-)
 
 data class NewCryptoKeyPair(
     val value: CryptoKeyPair,

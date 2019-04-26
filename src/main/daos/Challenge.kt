@@ -1,5 +1,6 @@
 package main.daos
 
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.BaseEntityNamespace
 
 /**
@@ -14,13 +15,27 @@ import framework.models.BaseEntityNamespace
  * @property distributionFeeReward the distribution fees and the pool. this is the
  * pool that will be drawn on if anybody 'opts-out' of attempting to help.
  */
-class Challenge(
-    val cryptoKeyPair: CryptoKeyPairNamespace,
+data class Challenge(
+    val cryptoKeyPair: CryptoKeyPair,
     val challengeSettings: ChallengeSettingNamespace,
     val challengeType: ChallengeType,
     val distributionFeeReward: RewardNamespace? = null,
     val parentChallenge: String? = null
 ): BaseEntityNamespace() {
+    override val className: String
+        get() = "challenge"
+
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        val list = super.getAttributes()
+        list.addAll(challengeSettings.getAttributes())
+        list.addAll(cryptoKeyPair.getAttributes())
+        list.add(ReplaceableAttribute("challengeType", challengeType.type, true))
+        if(parentChallenge != null)
+            list.add(ReplaceableAttribute("parentChallenge", parentChallenge, true))
+        if(distributionFeeReward != null)
+            list.addAll(distributionFeeReward.getAttributes())
+        return list
+    }
 
     override fun toMap(): MutableMap<String, Any?> {
         val map = super.toMap()
@@ -35,21 +50,13 @@ class Challenge(
     }
 }
 
-data class ChallengeToUnsharedTransactionNamespace(val challenge: ChallengeNamespace, val shareTransactionList: ShareTransactionListNamespace)
+data class ChallengeToUnsharedTransactionNamespace(val challenge: Challenge, val shareTransactionList: ShareTransactionListNamespace)
 
 data class UserAccountChallengerNamespace(val challenger: UserAccountNamespace, val receivers: List<UserAccountChallengerNamespace>)
 
 data class ChallengeToUnsharedTransactionsNamespaceList(val challengeToUnsharedTransactions: List<ChallengeToUnsharedTransactionNamespace>)
 
 data class SubChallengeNamespace(val subChallengeId: Int?, val type: String?)
-
-data class ChallengeNamespace(
-    val challengeSettings: ChallengeSettingNamespace,
-    val completionCriteria: CompletionCriteriaNamespace,
-    val distributionFeeReward: RewardNamespace,
-    val subChallenges: List<SubChallengeNamespace>? = null,
-    val parentChallenge: String? = null
-    )
 
 enum class ChallengeType(val type: String) {
     SYNC("sync"), ASYNC("async")
