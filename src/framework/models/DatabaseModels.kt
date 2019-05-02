@@ -32,11 +32,30 @@ abstract class BaseEntity(
 
 // Base entity namespace's are sub objects that are stored inside of BaseEntity's
 // Currently these are stored in Transaction > Action > data
+abstract class BaseNamespace(val className: String? = null): BaseObject {
+    init {
+        className ?: this.javaClass.simpleName
+    }
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        return mutableListOf()
+    }
+
+    override fun toMap(): MutableMap<String, Any?> {
+        return mutableMapOf()
+    }
+}
+
+// Base entity namespace's are sub objects that are stored inside of BaseEntity's
+// Currently these are stored in Transaction > Action > data
 abstract class BaseEntityNamespace(
     val id: String = UUID.randomUUID().toString(),
+    val className: String? = null,
     val createdAt: DateTime = currentUtc()
 ): BaseObject {
-    abstract val className: String
+    init {
+        className ?: this.javaClass.simpleName
+    }
+
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         return mutableListOf(
             ReplaceableAttribute("${className}_id", id, true),

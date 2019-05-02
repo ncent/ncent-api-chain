@@ -1,10 +1,7 @@
 package main.daos
 
-import framework.models.BaseIntEntity
-import framework.models.BaseIntEntityClass
-import framework.models.BaseIntIdTable
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.ReferenceOption
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
+import framework.models.BaseEntityNamespace
 
 /**
  * Representation of a Token -- used when transfering/sharing tokens via transactions
@@ -13,23 +10,28 @@ import org.jetbrains.exposed.sql.ReferenceOption
  * @property amount
  * @property tokenType
  */
-class Token(id: EntityID<Int>) : BaseIntEntity(id, Tokens) {
-    companion object : BaseIntEntityClass<Token>(Tokens)
-
-    var amount by Tokens.amount
-    var tokenType by TokenType referencedOn Tokens.tokenType
-
+class Token(
+    val name: String,
+    val parent: String? = null,
+    val conversion: Double? = null
+) : BaseEntityNamespace() {
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()
-        map.put("amount", amount)
-        map.put("tokenType", tokenType.toMap())
+        map.put("name", name)
+        if(parent != null)
+            map["parent"] = parent
+        if(conversion != null)
+            map["conversion"] = conversion
         return map
     }
-}
 
-object Tokens : BaseIntIdTable("tokens") {
-    val amount = integer("amount")
-    val tokenType = reference("token_type", TokenTypes, onDelete = ReferenceOption.CASCADE)
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        var list = super.getAttributes()
+        list.add(ReplaceableAttribute("name", name, true))
+        if(parent != null)
+            list.add(ReplaceableAttribute("parent", parent, true))
+        if(conversion != null)
+            list.add(ReplaceableAttribute("conversion", conversion.toString(), true))
+        return list
+    }
 }
-
-data class TokenNamespace(val amount: Int, val tokenType: TokenTypeNamespace)

@@ -10,12 +10,11 @@ import main.helpers.EncryptionHelper
  * @property privateKey
  */
 
+// We pass the public key as the ID to make sure we have uniqueness
 data class CryptoKeyPair(
     val publicKey: String,
     private val _privateKey: String
-): BaseEntityNamespace() {
-    override val className = "crypto_key_pair"
-
+): BaseEntityNamespace(publicKey) {
     val privateKey: String
     private val _privateKeySalt: String
 

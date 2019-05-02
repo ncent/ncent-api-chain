@@ -1,31 +1,26 @@
 package main.daos
 
-import framework.models.BaseIntEntity
-import framework.models.BaseIntEntityClass
-import framework.models.BaseIntIdTable
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute
+import framework.models.BaseNamespace
 import kotlinserverless.framework.models.Handler
-import org.jetbrains.exposed.dao.EntityID
 
-class Healthcheck(id: EntityID<Int>): BaseIntEntity(id, Healthchecks) {
-	var status by Healthchecks.status
-	var message by Healthchecks.message
-
-	companion object: BaseIntEntityClass<Healthcheck>(Healthchecks) {
-		fun findByStatus(status: String): Healthcheck {
-			return Healthcheck.find { Healthchecks.status eq status }.first()
-		}
+class Healthcheck(
+	val status: String,
+	val message: String
+): BaseNamespace() {
+	override fun getAttributes(): MutableList<ReplaceableAttribute> {
+		var list = super.getAttributes()
+		list.add(ReplaceableAttribute("status", status, true))
+		list.add(ReplaceableAttribute("message", message, true))
+		list.add(ReplaceableAttribute("dburl", Handler.db.listDomains().domainNames.toString(), true))
+		return list
 	}
 
 	override fun toMap(): MutableMap<String, Any?> {
 		var map = super.toMap()
 		map.put("status", status)
 		map.put("message", message)
-		map.put("dburl", Handler().getDbName())
+		map.put("dburl", Handler.db.listDomains().domainNames.toString())
 		return map
 	}
-}
-
-object Healthchecks : BaseIntIdTable("healthchecks") {
-	var status = varchar("status", 20).uniqueIndex()
-	var message = varchar("message", 100)
 }

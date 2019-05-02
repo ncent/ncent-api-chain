@@ -20,9 +20,10 @@ import framework.models.*
 class Transaction(
     val from: String,
     val to: String,
-    val action: ActionNamespace,
+    val action: Action,
+    val amount: Double? = null,
     val previousTransaction: String? = null,
-    val metadatas: List<MetadatasNamespace>? = null
+    val metadatas: Metadatas? = null
 ): BaseEntity() {
 
     fun getQuery(): String {
@@ -34,8 +35,12 @@ class Transaction(
         list.add(ReplaceableAttribute("from", from, true))
         list.add(ReplaceableAttribute("to", to, true))
         list.addAll(action.getAttributes())
+        if(amount != null)
+            list.add(ReplaceableAttribute("amount", amount.toString(), true))
+        if(previousTransaction != null)
+            list.add(ReplaceableAttribute("previousTransaction", previousTransaction.toString(), true))
         if(metadatas != null)
-            list.addAll(metadatas.map { it.getAttributes() }.flatten())
+            list.addAll(metadatas.getAttributes())
         return list
     }
 
@@ -44,20 +49,71 @@ class Transaction(
         map.put("from", from)
         map.put("to", to)
         map.put("action", action.toMap())
+        if(amount != null)
+            map.put("amount", amount)
         if(previousTransaction != null)
             map.put("previousTransactionId", previousTransaction)
         if(metadatas != null)
-            map.put("metadatas", metadatas.map { it.toMap() })
+            map.putAll(metadatas.toMap())
         return map
     }
 }
 
-data class TransactionNamespace(val from: String?=null, val to: String?=null, val action: ActionNamespace?=null, val previousTransaction: Int?=null, val metadatas: Array<MetadatasNamespace>? = null)
+data class TransactionNamespaceList(val transactions: List<Transaction>)
 
-data class TransactionNamespaceList(val transactions: List<TransactionNamespace>)
-
-data class TransactionToShareNamespace(val transactions: TransactionNamespace, val shares: Int)
+data class TransactionToShareNamespace(val transaction: Transaction, val shares: Int)
 
 data class ShareTransactionListNamespace(val transactionsToShares: List<TransactionToShareNamespace>)
 
-data class TransactionWithNewUserNamespace(val transactions: List<TransactionNamespace>, val newUser: NewUserAccountNamespace? = null)
+data class TransactionWithNewUserNamespace(val transactions: List<Transaction>, val newUser: NewUserAccount? = null)
+
+/**
+ * Representation of an action taking place and being stored in a transaction
+ * @property type This is the action type; ex: transfer, create, share, payout.
+ * @property data The data object; ex: a particular token, a particular Challenge
+ * @property dataType This is the object type; ex: Token, Challenge.
+ */
+
+data class Action(
+    val type: ActionType?=null,
+    val dataType: String,
+    val dataId: String?=null,
+    val data: BaseEntityNamespace?=null
+): BaseNamespace() {
+    override fun toMap(): MutableMap<String, Any?> {
+        val map = mutableMapOf<String, Any?>()
+        map["dataType"] = dataType
+        if(data != null)
+            map["data"] = data
+        if(type != null)
+            map["type"] = type.toString()
+        if(dataId != null)
+            map["dataId"] = dataId
+        return map
+    }
+
+    override fun getAttributes(): MutableList<ReplaceableAttribute> {
+        var list = mutableListOf(
+                ReplaceableAttribute("dataType", dataType, true)
+        )
+        if(data != null)
+            list.addAll(data.getAttributes())
+        if(type != null)
+            list.add(ReplaceableAttribute("type", type.type, true))
+        if(dataId != null)
+            list.add(ReplaceableAttribute("dataId", dataId, true))
+        return list
+    }
+}
+
+enum class ActionType(val type: String) {
+    TRANSFER("transfer"),
+    CREATE("create"),
+    SHARE("share"),
+    PAYOUT("payout"),
+    ACTIVATE("activate"),
+    COMPLETE("complete"),
+    INVALIDATE("invalidate"),
+    EXPIRE("expire"),
+    UPDATE("update")
+}

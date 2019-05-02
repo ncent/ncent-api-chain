@@ -11,21 +11,20 @@ import framework.models.BaseNamespace
  * @property value
  */
 
-data class MetadatasNamespace(
-    val key: String,
-    val value: String
-): BaseNamespace {
+data class Metadatas(
+    val metadatas: Map<String, String>,
+    val metadatasClassName: String
+): BaseNamespace(metadatasClassName) {
+
     override fun toMap(): MutableMap<String, Any?> {
-        val map = mutableMapOf<String, Any?>()
-        map["key"] = key
-        map["value"] = value
+        val map = super.toMap()
+        metadatas.forEach { map[it.key] = it.value }
         return map
     }
 
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
-        return mutableListOf(
-            ReplaceableAttribute("key", key, true),
-            ReplaceableAttribute("value", value, true)
-        )
+        val list = super.getAttributes()
+        metadatas.forEach { list.add(ReplaceableAttribute(it.key, it.value, true)) }
+        return list
     }
 }
