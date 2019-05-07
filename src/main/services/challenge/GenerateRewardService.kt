@@ -1,9 +1,8 @@
-package main.services.reward
+package main.services.challenge
 
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
-import main.services.user_account.GenerateCryptoKeyPairService
 import org.jetbrains.exposed.sql.SizedCollection
 
 /**

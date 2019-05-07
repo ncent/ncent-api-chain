@@ -7,9 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
 import kotlinserverless.framework.models.Handler
-import main.services.completion_criteria.GenerateCompletionCriteriaService
+import main.services.challenge.GenerateCompletionCriteriaService
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import test.TestHelper
 
 @ExtendWith(MockKExtension::class)

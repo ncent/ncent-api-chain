@@ -1,7 +1,7 @@
 package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
-import framework.models.BaseNamespace
+import framework.models.BaseEntityNamespace
 
 /**
  * Metadata will be a key-value store
@@ -12,9 +12,8 @@ import framework.models.BaseNamespace
  */
 
 data class Metadatas(
-    val metadatas: Map<String, String>,
-    val metadatasClassName: String
-): BaseNamespace(metadatasClassName) {
+    val metadatas: Map<String, String>
+): BaseEntityNamespace() {
 
     override fun toMap(): MutableMap<String, Any?> {
         val map = super.toMap()

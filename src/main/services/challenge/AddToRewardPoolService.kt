@@ -1,4 +1,4 @@
-package main.services.reward
+package main.services.challenge
 
 import kotlinserverless.framework.services.SOAResult
 import main.daos.Reward

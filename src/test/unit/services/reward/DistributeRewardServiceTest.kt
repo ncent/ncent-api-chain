@@ -2,7 +2,6 @@ package test.unit.services.reward
 
 import io.kotlintest.Description
 import io.kotlintest.TestResult
-import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.WordSpec
 import io.mockk.junit5.MockKExtension
@@ -12,7 +11,7 @@ import main.daos.Audience
 import main.daos.Reward
 import main.daos.RewardTypeName
 import main.daos.Transaction
-import main.services.reward.DistributeRewardService
+import main.services.challenge.DistributeRewardService
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.extension.ExtendWith

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
 import kotlinserverless.framework.models.Handler
-import main.services.reward.GenerateRewardService
+import main.services.challenge.GenerateRewardService
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @ExtendWith(MockKExtension::class)

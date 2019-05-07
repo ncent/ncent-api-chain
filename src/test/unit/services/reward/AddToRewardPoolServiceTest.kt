@@ -9,10 +9,9 @@ import io.mockk.junit5.MockKExtension
 import kotlinserverless.framework.models.Handler
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
-import main.services.reward.AddToRewardPoolService
-import main.services.reward.GenerateRewardService
+import main.services.challenge.AddToRewardPoolService
+import main.services.challenge.GenerateRewardService
 import main.services.token.GenerateTokenService
-import main.services.user_account.GenerateUserAccountService
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.extension.ExtendWith
 import test.TestHelper

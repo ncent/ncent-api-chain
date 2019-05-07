@@ -4,10 +4,7 @@ import framework.models.idValue
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
-import main.services.completion_criteria.GenerateCompletionCriteriaService
-import main.services.reward.GenerateRewardService
 import main.services.transaction.GenerateTransactionService
-import main.services.user_account.GenerateCryptoKeyPairService
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.SizedCollection
 

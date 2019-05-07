@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import main.daos.*
 import kotlinserverless.framework.models.Handler
 import kotlinserverless.framework.services.SOAResultType
-import main.services.user.UpdateUserService
+import main.services.user_account.UpdateUserService
 import org.jetbrains.exposed.sql.transactions.transaction
 import test.TestHelper
 

@@ -8,13 +8,12 @@ import main.helpers.JsonHelper
 import main.helpers.UserAccountHelper
 import main.services.challenge.GenerateChallengeService
 import main.services.challenge.ShareChallengeService
-import main.services.completion_criteria.GenerateCompletionCriteriaService
-import main.services.reward.AddToRewardPoolService
-import main.services.reward.GenerateRewardService
+import main.services.challenge.GenerateCompletionCriteriaService
+import main.services.challenge.AddToRewardPoolService
+import main.services.challenge.GenerateRewardService
 import main.services.token.GenerateTokenService
 import main.services.transaction.GenerateTransactionService
 import main.services.user_account.GenerateUserAccountService
-import org.glassfish.jersey.internal.util.Base64
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime

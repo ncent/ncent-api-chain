@@ -1,4 +1,4 @@
-package main.services.user
+package main.services.user_account
 
 import kotlinserverless.framework.models.Handler
 import kotlinserverless.framework.services.SOAResult

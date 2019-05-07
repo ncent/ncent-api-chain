@@ -2,7 +2,7 @@ package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.BaseEntityNamespace
-import framework.models.BaseNamespace
+import framework.models.BaseObject
 import main.helpers.EncryptionHelper
 
 /**
@@ -52,7 +52,7 @@ data class NewUserAccount(
 data class ApiCred(
     val apiKey: String,
     private val _secretKey: String
-): BaseNamespace() {
+): BaseEntityNamespace() {
     val secretKey: String
     private val _secretKeySalt: String
 
@@ -87,14 +87,15 @@ data class User(
     val email: String,
     val firstname: String,
     val lastname: String,
-    val metadatas: Metadatas
+    val metadatas: Metadatas? = null
 ): BaseEntityNamespace() {
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()
         map.put("email", email)
         map.put("firstname", firstname)
         map.put("lastname", lastname)
-        map.putAll(metadatas.toMap())
+        if(metadatas != null)
+            map.putAll(metadatas.toMap())
         return map
     }
 
@@ -103,7 +104,8 @@ data class User(
         list.add(ReplaceableAttribute("email", email, true))
         list.add(ReplaceableAttribute("firstname", firstname, true))
         list.add(ReplaceableAttribute("lastname", lastname, true))
-        list.addAll(metadatas.getAttributes())
+        if(metadatas != null)
+            list.addAll(metadatas.getAttributes())
         return list
     }
 }

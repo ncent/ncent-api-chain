@@ -1,4 +1,4 @@
-package main.services.completion_criteria
+package main.services.challenge
 
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType

@@ -1,9 +1,8 @@
-package main.services.completion_criteria
+package main.services.challenge
 
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
-import main.services.reward.GenerateRewardService
 
 /**
  * Generate a new completion criteria

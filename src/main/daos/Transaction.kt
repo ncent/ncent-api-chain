@@ -25,11 +25,6 @@ class Transaction(
     val previousTransaction: String? = null,
     val metadatas: Metadatas? = null
 ): BaseEntity() {
-
-    fun getQuery(): String {
-        throw NotImplementedError()
-    }
-
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         var list = super.getAttributes()
         list.add(ReplaceableAttribute("from", from, true))
@@ -75,18 +70,17 @@ data class TransactionWithNewUserNamespace(val transactions: List<Transaction>, 
  */
 
 data class Action(
-    val type: ActionType?=null,
+    val type: ActionType,
     val dataType: String,
     val dataId: String?=null,
     val data: BaseEntityNamespace?=null
-): BaseNamespace() {
+): BaseEntityNamespace() {
     override fun toMap(): MutableMap<String, Any?> {
         val map = mutableMapOf<String, Any?>()
+        map["type"] = type.toString()
         map["dataType"] = dataType
         if(data != null)
             map["data"] = data
-        if(type != null)
-            map["type"] = type.toString()
         if(dataId != null)
             map["dataId"] = dataId
         return map
@@ -94,12 +88,11 @@ data class Action(
 
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         var list = mutableListOf(
-                ReplaceableAttribute("dataType", dataType, true)
+            ReplaceableAttribute("dataType", dataType, true),
+            ReplaceableAttribute("type", type.type, true)
         )
         if(data != null)
             list.addAll(data.getAttributes())
-        if(type != null)
-            list.add(ReplaceableAttribute("type", type.type, true))
         if(dataId != null)
             list.add(ReplaceableAttribute("dataId", dataId, true))
         return list

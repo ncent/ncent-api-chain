@@ -2,10 +2,8 @@ package main.services.token
 
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType
-import main.daos.*
 import main.daos.Transaction
 import main.helpers.TransferTokenHelper
-import main.services.reward.DistributeRewardService
 
 /**
  * Transfer all tokens held by one address to another

@@ -9,7 +9,10 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
+import framework.models.BaseEntity
+import framework.models.BaseObject
 import main.chain.AwsSimpleDbLedgerClient
+import main.chain.TransactionContstructor
 import main.daos.Transaction
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
@@ -62,8 +65,8 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
   }
 
   companion object {
-    lateinit var db: AmazonSimpleDB
     lateinit var ledgerClient: AwsSimpleDbLedgerClient<Transaction>
+    private lateinit var db: AmazonSimpleDB
 
     inline fun build(block: ApiGatewayResponse.Builder.() -> Unit) = ApiGatewayResponse.Builder().apply(block).build()
     private val LOG = LogManager.getLogger(this::class.java)!!
@@ -94,11 +97,15 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
         val clientBuilder = AmazonSimpleDBClient.builder()
         clientBuilder.credentials = AWSCredentials()
         db = clientBuilder.build()
-        db.createDomain(CreateDomainRequest("transaction"))
-        ledgerClient = AwsSimpleDbLedgerClient()
+        db.createDomain(CreateDomainRequest(Transaction::class.simpleName))
+        ledgerClient = AwsSimpleDbLedgerClient(db, Transaction::class, TransactionContstructor())
       } catch(e: Exception) {
         println(e.message)
       }
+    }
+
+    fun getDbUrls(): String {
+      return db.listDomains().domainNames.toString()
     }
   }
 }

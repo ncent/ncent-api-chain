@@ -1,6 +1,8 @@
 package framework.chain
 
-interface ReadableLedgerClient<T>: LedgerClient<T> {
+import framework.models.BaseObject
+
+interface ReadableLedgerClient<T: BaseObject>: LedgerClient<T> {
 
     // Read the latest state for a particular transaction type
     // the type is determined by the set of key/value pairs

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
 import kotlinserverless.framework.models.Handler
-import main.services.completion_criteria.ValidateCompletionCriteriaService
+import main.services.challenge.ValidateCompletionCriteriaService
 import org.jetbrains.exposed.sql.transactions.transaction
 import test.TestHelper
 

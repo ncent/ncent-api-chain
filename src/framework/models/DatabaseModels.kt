@@ -11,7 +11,7 @@ fun currentUtc(): DateTime = DateTime.now(DateTimeZone.UTC)
 // Currently only Transactions exist as this type
 // TODO: Change how we generate the UUID
 abstract class BaseEntity(
-    val id: String = UUID.randomUUID().toString(),
+    override val id: String = UUID.randomUUID().toString(),
     val createdAt: DateTime = currentUtc()
 ): BaseObject {
 
@@ -32,47 +32,37 @@ abstract class BaseEntity(
 
 // Base entity namespace's are sub objects that are stored inside of BaseEntity's
 // Currently these are stored in Transaction > Action > data
-abstract class BaseNamespace(val className: String? = null): BaseObject {
-    init {
-        className ?: this.javaClass.simpleName
-    }
-    override fun getAttributes(): MutableList<ReplaceableAttribute> {
-        return mutableListOf()
-    }
-
-    override fun toMap(): MutableMap<String, Any?> {
-        return mutableMapOf()
-    }
-}
-
-// Base entity namespace's are sub objects that are stored inside of BaseEntity's
-// Currently these are stored in Transaction > Action > data
 abstract class BaseEntityNamespace(
-    val id: String = UUID.randomUUID().toString(),
-    val className: String? = null,
+    override val id: String = UUID.randomUUID().toString(),
     val createdAt: DateTime = currentUtc()
 ): BaseObject {
-    init {
-        className ?: this.javaClass.simpleName
-    }
 
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
-        return mutableListOf(
-            ReplaceableAttribute("${className}_id", id, true),
-            ReplaceableAttribute("${className}_createdAt", createdAt.toString(), true)
-        )
+        val list = super.getAttributes()
+        list.add(ReplaceableAttribute("${this.javaClass.simpleName}_id", id, true))
+        list.add(ReplaceableAttribute("${this.javaClass.simpleName}_createdAt", createdAt.toString(), true))
+        return list
     }
 
     override fun toMap(): MutableMap<String, Any?> {
-        val map = mutableMapOf<String, Any?>()
-        map["${className}_id"] = id
-        map["${className}_createdAt"] = createdAt.toString()
+        val map = super.toMap()
+        map["${this.javaClass.simpleName}_id"] = id
+        map["${this.javaClass.simpleName}_createdAt"] = createdAt.toString()
         return map
     }
 }
 
 interface BaseObject {
-    fun toMap(): MutableMap<String, Any?>
+    val id: String
+    fun getAttributes(): MutableList<ReplaceableAttribute> {
+        return mutableListOf()
+    }
 
-    fun getAttributes(): MutableList<ReplaceableAttribute>
+    fun toMap(): MutableMap<String, Any?> {
+        return mutableMapOf()
+    }
+
+    fun getQuery(): String {
+
+    }
 }

@@ -4,8 +4,6 @@ import framework.models.idValue
 import kotlinserverless.framework.services.SOAResult
 import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
-import main.services.completion_criteria.ValidateCompletionCriteriaService
-import main.services.reward.DistributeRewardService
 import main.services.transaction.GenerateTransactionService
 
 /**

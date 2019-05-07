@@ -2,7 +2,6 @@ package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.BaseEntityNamespace
-import framework.models.BaseNamespace
 import org.joda.time.DateTime
 
 /**
@@ -106,7 +105,7 @@ class ChallengeSetting(
     val maxDepth: Integer?,
     val maxNodes: Integer?,
     val metadatas: Metadatas?
-): BaseNamespace() {
+): BaseEntityNamespace() {
 
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()
@@ -175,7 +174,7 @@ class Reward(
     val audience: RewardAudience,
     val pool: List<String>,
     val metadatas: Metadatas?
-) : BaseNamespace() {
+) : BaseEntityNamespace() {
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()
         map.put("type", type.str)

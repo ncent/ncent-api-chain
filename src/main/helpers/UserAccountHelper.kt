@@ -1,17 +1,34 @@
 package main.helpers
 
 import kotlinserverless.framework.models.InvalidArguments
-import kotlinserverless.framework.services.SOAResult
-import kotlinserverless.framework.services.SOAResultType
 import main.daos.*
 import main.services.user_account.GenerateUserAccountService
-import org.jetbrains.exposed.sql.select
 import org.glassfish.jersey.internal.util.Base64
 import main.helpers.ControllerHelper.UserAuth
+import org.stellar.sdk.KeyPair
 
 object UserAccountHelper {
+    fun generateApiCred(): ApiCred {
+        //TODO figure out best practices for apikey/secret key generation
+        val key = KeyPair.random()
+        //TODO look into encryption
+        return ApiCred(
+            key.publicKey.toString(),
+            key.secretSeed.toString()
+        )
+    }
+
+    fun generateNewCryptoKeyPair(): NewCryptoKeyPair {
+        val key = KeyPair.random()
+        val secret = key.secretSeed.toString()
+        return NewCryptoKeyPair(
+            CryptoKeyPair(key.publicKey.toString(), secret),
+            secret
+        )
+    }
+
     fun getUserAuth(user: NewUserAccount): String {
-        val apiKey = user.value.apiCreds.apiKey
+        val apiKey = user.value.apiCred.apiKey
         val encodedApiKeyAndSecret = Base64.encodeAsString("$apiKey:${user.secretKey}")
         return "Basic $encodedApiKeyAndSecret"
     }
@@ -32,7 +49,7 @@ object UserAccountHelper {
     fun getOrGenerateUser(
         email: String?,
         publicKey: String?
-    ): SOAResult<Pair<UserAccount, NewUserAccount?>> {
+    ): Pair<UserAccount, NewUserAccount?> {
         // validate users exist, if it does not generate one
         var newUserAccount: NewUserAccount? = null
 
@@ -81,6 +98,6 @@ object UserAccountHelper {
             else ->
                 return SOAResult(SOAResultType.FAILURE, "Must include an email or public key")
         }
-        return SOAResult(SOAResultType.SUCCESS, null, Pair(userAccount, newUserAccount))
+        return Pair(userAccount, newUserAccount)
     }
 }
