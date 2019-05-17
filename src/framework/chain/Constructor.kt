@@ -11,7 +11,7 @@ import kotlin.reflect.full.primaryConstructor
 interface Constructor<T: BaseObject> {
     // Used to construct a new transaction
     // Each transaction type should have it's own constructor
-    fun construct(keyPair: CryptoKeyPair, to: String?, actionType: ActionType, data: T): T
+    fun construct(keyPair: CryptoKeyPair, to: String?, actionType: ActionType, data: BaseObject): T
 
     fun construct(clazz: KClass<T>, item: Item): T {
         val attributes = item.attributes
@@ -23,4 +23,6 @@ interface Constructor<T: BaseObject> {
         }
         return constructor.callBy(constructorParams)
     }
+
+    fun construct(vararg kvp: Pair<String, String>): String
 }

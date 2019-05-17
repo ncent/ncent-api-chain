@@ -1,12 +1,16 @@
 package kotlinserverless.framework.models
 
 import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.AWSCredentialsProvider
+import com.amazonaws.internal.StaticCredentialsProvider
 import kotlinserverless.framework.dispatchers.RequestDispatcher
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.simpledb.AmazonSimpleDB
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient
+import com.amazonaws.services.simpledb.AmazonSimpleDBClientBuilder
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
+import com.amazonaws.services.simpledb.model.DeleteDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
 import framework.models.BaseEntity
@@ -16,6 +20,7 @@ import main.chain.TransactionContstructor
 import main.daos.Transaction
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
+import org.h2.command.dml.Delete
 
 open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
 
@@ -94,14 +99,16 @@ open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
     // TODO figure out how to do this correctly
     fun connectToLedger() {
       try {
-        val clientBuilder = AmazonSimpleDBClient.builder()
-        clientBuilder.credentials = AWSCredentials()
-        db = clientBuilder.build()
+        db = AmazonSimpleDBClientBuilder.standard().withRegion(System.getenv("region")).build()
         db.createDomain(CreateDomainRequest(Transaction::class.simpleName))
         ledgerClient = AwsSimpleDbLedgerClient(db, Transaction::class, TransactionContstructor())
       } catch(e: Exception) {
         println(e.message)
       }
+    }
+
+    fun disconnectAndDropLedger() {
+      db.deleteDomain(DeleteDomainRequest(Transaction::class.simpleName))
     }
 
     fun getDbUrls(): String {

@@ -9,9 +9,17 @@ interface WritableLedgerClient<T: BaseObject>: LedgerClient<T> {
     // This will get the latest state of the particular transaction type
     // and validate the transaction is correct.
     // NOTE: you should call this super() to construct and validate
-    fun write(keyPair: CryptoKeyPair, to: String?, actionType: ActionType, data: T) {
+    // TODO: move validation into ledger write, add 'db transaction' functionality
+    // TODO: remove double validation
+    fun write(keyPair: CryptoKeyPair, to: String?, actionType: ActionType, data: BaseObject) {
         val transaction = ledger.constructor.construct(keyPair, to, actionType, data)
+        // TODO -- ADD A REDIS LOCK HERE FOR THE keypair
         validator.validate(transaction)
         ledger.write(transaction)
+        validator.validate(transaction.id)
+    }
+
+    fun update(keyPair: CryptoKeyPair, data: BaseObject) {
+        return write(keyPair, keyPair.publicKey, ActionType.UPDATE, data)
     }
 }

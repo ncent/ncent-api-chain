@@ -2,7 +2,6 @@ package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.BaseEntityNamespace
-import framework.models.BaseObject
 import main.helpers.EncryptionHelper
 
 /**
@@ -54,7 +53,7 @@ data class ApiCred(
     private val _secretKey: String
 ): BaseEntityNamespace() {
     val secretKey: String
-    private val _secretKeySalt: String
+    val _secretKeySalt: String
 
     init {
         val encryption = EncryptionHelper.encrypt(_secretKey)

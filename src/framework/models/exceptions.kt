@@ -6,9 +6,7 @@ package kotlinserverless.framework.models
  * @property message Exception message
  * @constructor By default it will reply with a 500 HTTP method
  */
-abstract class MyException(var code: Int, override var message: String?): Exception(message) {
-    constructor() : this(500, "Internal Exception")
-}
+abstract class MyException(var code: Int = 500, override var message: String? = "Internal Exception"): Exception(message)
 
 /**
  * Exception thrown when the body doesn't contain all the required fields
@@ -41,7 +39,5 @@ class NotFoundException(override var message: String? = "Not Found") :
 class ForbiddenException(override var message: String? = "Operation forbidden") :
         MyException(403, message)
 
-class MyErrorException(override var message: String? = "Generic error"): MyException(500, message)
-class SoAErrorException(override var message: String? = "Generic error"): MyException(500, message)
-class SoAFailureException(override var message: String? = "Generic failure"): MyException(500, message)
 class UnauthorizedError(override var message: String? = "Invalid api credentials"): MyException(401, message)
+class DuplicateEntryError(override var message: String? = "Entry already exists"): MyException(409, message)

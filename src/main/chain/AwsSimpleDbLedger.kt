@@ -18,8 +18,8 @@ class AwsSimpleDbLedger<T: BaseObject>(
 ): Ledger<T> {
 
     @Throws(AmazonServiceException::class, AmazonClientException::class)
-    override fun read(query: () -> T): List<T> {
-        val result = db.select(SelectRequest(query().getQuery()))
+    override fun read(query: String): List<T> {
+        val result = db.select(SelectRequest(query))
         return result.items.map { constructor.construct(clazz, it) }
     }
 

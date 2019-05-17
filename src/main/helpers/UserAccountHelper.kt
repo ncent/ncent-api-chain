@@ -5,6 +5,7 @@ import main.daos.*
 import main.services.user_account.GenerateUserAccountService
 import org.glassfish.jersey.internal.util.Base64
 import main.helpers.ControllerHelper.UserAuth
+import main.services.user_account.GetUserAccountService
 import org.stellar.sdk.KeyPair
 
 object UserAccountHelper {
@@ -61,42 +62,25 @@ object UserAccountHelper {
              *   in order to share with a non-existant user we must have the email
              **/
             email != null -> {
-                val query = UserAccounts
-                    .innerJoin(Users)
-                    .select {
-                        Users.email eq email
-                    }.withDistinct()
-                val userAccounts = UserAccount.wrapRows(query).toList().distinct()
+                val ua = GetUserAccountService.execute(null, email)
 
-                if(userAccounts.isEmpty()) {
-                    val newUserAccountResult = GenerateUserAccountService.execute(
-                        uemail = email,
-                        ufirstname = email.substringBefore("@"),
-                        ulastname = ""
+                if(ua == null) {
+                    newUserAccount = GenerateUserAccountService.execute(
+                        email,
+                        email.substringBefore("@"),
+                        ""
                     )
-
-                    if(newUserAccountResult.result != SOAResultType.SUCCESS)
-                        return SOAResult(newUserAccountResult.result, newUserAccountResult.message)
-                    newUserAccount = newUserAccountResult.data
-                    newUserAccount!!.value
+                    newUserAccount.value
                 } else {
-                    userAccounts.first()
+                    ua
                 }
             }
             publicKey != null -> {
-                val query = UserAccounts
-                    .innerJoin(CryptoKeyPairs)
-                    .select {
-                        CryptoKeyPairs.publicKey eq publicKey
-                    }.withDistinct()
-                val userAccounts = UserAccount.wrapRows(query).toList().distinct()
-
-                if(userAccounts.isEmpty())
-                    return SOAResult(SOAResultType.FAILURE, "The user does not exist. Must pass email in order to proceed.")
-                userAccounts.first()
+                // TODO look into generating if not found
+                GetUserAccountService.execute(null, null, publicKey)
             }
             else ->
-                return SOAResult(SOAResultType.FAILURE, "Must include an email or public key")
+                throw InvalidArguments("Must include an email or public key")
         }
         return Pair(userAccount, newUserAccount)
     }

@@ -16,7 +16,7 @@ data class CryptoKeyPair(
     private val _privateKey: String
 ): BaseEntityNamespace(publicKey) {
     val privateKey: String
-    private val _privateKeySalt: String
+    val _privateKeySalt: String
 
     init {
         val encryption = EncryptionHelper.encrypt(_privateKey)

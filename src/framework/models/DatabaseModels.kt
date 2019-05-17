@@ -61,8 +61,4 @@ interface BaseObject {
     fun toMap(): MutableMap<String, Any?> {
         return mutableMapOf()
     }
-
-    fun getQuery(): String {
-
-    }
 }
