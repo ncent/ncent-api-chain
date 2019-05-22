@@ -34,10 +34,8 @@ object GenerateUserAccountService {
             apiCred
         )
 
-        Handler.ledgerClient.write(
+        Handler.ledgerClient.create(
             keyPair.value,
-            keyPair.value.publicKey,
-            ActionType.CREATE,
             userAccount
         )
 

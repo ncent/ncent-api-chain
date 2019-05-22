@@ -9,17 +9,18 @@ import org.joda.time.DateTime
  */
 object DeleteUserAccountService {
     fun execute(user: UserAccount) {
-        Handler.ledgerClient.update(
+        val userAccount = UserAccount(
+            User(
+                "DELETED_${DateTime.now()}_${user.userMetadata.email}",
+                user.userMetadata.firstname,
+                user.userMetadata.lastname
+            ),
             user.cryptoKeyPair,
-            UserAccount(
-                User(
-                    "DELETED_${DateTime.now()}_${user.userMetadata.email}",
-                    user.userMetadata.firstname,
-                    user.userMetadata.lastname
-                ),
-                user.cryptoKeyPair,
-                user.apiCred
-            )
+            user.apiCred
+        )
+        Handler.ledgerClient.delete(
+            user.cryptoKeyPair,
+            userAccount
         )
     }
 }

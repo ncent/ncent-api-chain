@@ -25,6 +25,9 @@ class Transaction(
     val previousTransaction: String? = null,
     val metadatas: Metadatas? = null
 ): BaseEntity() {
+    constructor(from: String, to: String, type: ActionType, data: BaseEntityNamespace) :
+        this(from, to, Action(type, data::class.simpleName!!, data.id, data))
+
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         var list = super.getAttributes()
         list.add(ReplaceableAttribute("from", from, true))

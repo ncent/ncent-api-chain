@@ -1,8 +1,8 @@
 package framework.chain
 
-import framework.models.BaseObject
+import main.daos.Transaction
 
-interface Ledger<T: BaseObject> {
+interface Ledger<T: Transaction> {
     val constructor: Constructor<T>
     fun read(query: String): List<T>
     fun write(value: T)

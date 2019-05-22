@@ -6,12 +6,11 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB
 import com.amazonaws.services.simpledb.model.PutAttributesRequest
 import com.amazonaws.services.simpledb.model.SelectRequest
 import framework.chain.*
-import framework.models.BaseObject
 import main.daos.Transaction
 import org.joda.time.DateTime
 import kotlin.reflect.KClass
 
-class AwsSimpleDbLedger<T: BaseObject>(
+class AwsSimpleDbLedger<T: Transaction>(
     private val db: AmazonSimpleDB,
     private val clazz: KClass<T>,
     override val constructor: Constructor<T>

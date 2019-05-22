@@ -1,11 +1,7 @@
 package main.services.transaction
 
-import kotlinserverless.framework.services.SOAResult
-import kotlinserverless.framework.services.SOAResultType
+import kotlinserverless.framework.models.Handler
 import main.daos.*
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.selectAll
 
 /**
  * Retrieve transactions by filter, such as from/to
@@ -15,44 +11,26 @@ object GetTransactionsService {
     fun execute(
         from: String?,
         to: String?,
-        previousTxId: Int?,
-        actionNamespace: ActionNamespace?
-    ) : SOAResult<TransactionList> {
-        var actionIds: List<Int>? = null
-        if(actionNamespace != null) {
-            val query = Actions.selectAll()
-            actionNamespace.data?.let {
-                query.andWhere { Actions.data eq actionNamespace.data }
-            }
-            actionNamespace.type?.let {
-                query.andWhere { Actions.type eq actionNamespace.type }
-            }
-            actionNamespace.dataType?.let {
-                query.andWhere { Actions.dataType eq actionNamespace.dataType }
-            }
-            actionIds = query.map { it[Actions.id].value }
+        previousTxId: String?,
+        action: Action?
+    ) : List<Transaction> {
+        var query = arrayListOf<Pair<String,String>>()
+
+        if(from != null)
+            query.add(Pair("from", from))
+        if(to != null)
+            query.add(Pair("to", to))
+
+        // TODO: think how to correct this.
+        if(previousTxId != null)
+            query.add(Pair("previousTransactionId", previousTxId))
+        if(action != null) {
+            if(action.dataId != null)
+                query.add(Pair("dataId", action.dataId))
+            query.add(Pair("type", action.type.type))
+            query.add(Pair("dataType", action.dataType))
         }
 
-        val query = Transactions.selectAll()
-        actionIds?.let {
-            query.andWhere { Transactions.action inList actionIds }
-        }
-        previousTxId?.let {
-            query.andWhere { Transactions.previousTransaction eq EntityID(
-                previousTxId,
-                Transactions
-            ) }
-        }
-        from?.let {
-            query.andWhere { Transactions.from eq from }
-        }
-        to?.let {
-            query.andWhere { Transactions.to eq to }
-        }
-        query.withDistinct()
-        // TODO figure out how to do this without a seprate query
-        return return SOAResult(SOAResultType.SUCCESS, null, TransactionList(Transaction.find {
-            Transactions.id inList query.map { it[Transactions.id] }
-        }.toList().reversed()))
+        return Handler.ledgerClient.readAll(*query.toTypedArray())
     }
 }

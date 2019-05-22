@@ -1,8 +1,8 @@
 package framework.chain
 
-import framework.models.BaseObject
+import main.daos.Transaction
 
-interface ReadableLedgerClient<T: BaseObject>: LedgerClient<T> {
+interface ReadableLedgerClient<T: Transaction>: LedgerClient<T> {
 
     // Read the latest state for a particular transaction type
     // the type is determined by the set of key/value pairs

@@ -1,8 +1,8 @@
 package framework.chain
 
-import framework.models.BaseObject
+import main.daos.Transaction
 
-interface Validator<T: BaseObject> {
+interface Validator<T: Transaction> {
     val ledger: Ledger<T>
     // Used to validate a particular transaction type
     // Each transaction type should have it's own validator

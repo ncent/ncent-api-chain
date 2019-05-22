@@ -2,9 +2,9 @@ package main.chain
 
 import framework.chain.Ledger
 import framework.chain.Validator
-import framework.models.BaseObject
+import main.daos.Transaction
 
-class TransactionValidator<T: BaseObject>(
+class TransactionValidator<T: Transaction>(
     override val ledger: Ledger<T>
 ): Validator<T> {
     override fun validate(id: String) {

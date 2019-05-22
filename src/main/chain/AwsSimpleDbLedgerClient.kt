@@ -2,10 +2,10 @@ package main.chain
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB
 import framework.chain.*
-import framework.models.BaseObject
+import main.daos.Transaction
 import kotlin.reflect.KClass
 
-class AwsSimpleDbLedgerClient<T: BaseObject>(
+class AwsSimpleDbLedgerClient<T: Transaction>(
     private val db: AmazonSimpleDB,
     private val clazz: KClass<T>,
     private val constructor: Constructor<T>,
@@ -14,12 +14,11 @@ class AwsSimpleDbLedgerClient<T: BaseObject>(
 ) : ReadableLedgerClient<T>, WritableLedgerClient<T> {
 
     override fun read(vararg kvp: Pair<String, String>): T {
-        // TODO: Add sorting and limit to query
-        val query = constructor.construct(*kvp)
-        return ledger.read(query).first()
+        return readAll(*kvp).first()
     }
 
     override fun readAll(vararg kvp: Pair<String, String>): List<T> {
+        // TODO: Add sorting
         return ledger.read(constructor.construct(*kvp))
     }
 }
