@@ -23,7 +23,7 @@ class GenerateUserAccountServiceTest : WordSpec() {
         "calling execute with a valid user account" should {
             "return the newly created user" {
                 var result = GenerateUserAccountService.execute("dev@ncnt.io", "dev", "ncnt")
-                result.value.id shouldNotBe null
+                result.value shouldNotBe null
             }
         }
 

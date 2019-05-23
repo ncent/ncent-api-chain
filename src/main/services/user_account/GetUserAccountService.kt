@@ -15,6 +15,7 @@ object GetUserAccountService {
             }
             publicKey != null -> {
                 query.add(Pair("publicKey", publicKey))
+                query.add(Pair("keyPairType", UserAccount::class.simpleName!!))
             }
             email != null -> {
                 query.add(Pair("email", email))

@@ -23,7 +23,7 @@ object UserAccountHelper {
         val key = KeyPair.random()
         val secret = key.secretSeed.toString()
         return NewCryptoKeyPair(
-            CryptoKeyPair(key.publicKey.toString(), secret),
+            CryptoKeyPair(key.publicKey.toString(), secret, UserAccount::class.simpleName!!),
             secret
         )
     }
