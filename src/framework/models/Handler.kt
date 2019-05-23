@@ -1,26 +1,19 @@
 package kotlinserverless.framework.models
 
-import com.amazonaws.auth.AWSCredentials
-import com.amazonaws.auth.AWSCredentialsProvider
-import com.amazonaws.internal.StaticCredentialsProvider
 import kotlinserverless.framework.dispatchers.RequestDispatcher
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.simpledb.AmazonSimpleDB
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient
 import com.amazonaws.services.simpledb.AmazonSimpleDBClientBuilder
 import com.amazonaws.services.simpledb.model.CreateDomainRequest
 import com.amazonaws.services.simpledb.model.DeleteDomainRequest
 import com.bugsnag.Bugsnag
 import com.fasterxml.jackson.databind.ObjectMapper
-import framework.models.BaseEntity
-import framework.models.BaseObject
 import main.chain.AwsSimpleDbLedgerClient
 import main.chain.TransactionContstructor
 import main.daos.Transaction
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.LogManager
-import org.h2.command.dml.Delete
 
 open class Handler: RequestHandler<Map<String, Any>, ApiGatewayResponse> {
 
