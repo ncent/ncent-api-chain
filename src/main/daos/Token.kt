@@ -1,7 +1,7 @@
 package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
-import framework.models.BaseEntityNamespace
+import framework.models.BaseObject
 
 /**
  * Representation of a Token -- used when transfering/sharing tokens via transactions
@@ -14,7 +14,7 @@ class Token(
     val name: String,
     val parent: String? = null,
     val conversion: Double? = null
-) : BaseEntityNamespace() {
+) : BaseObject {
     override fun toMap(): MutableMap<String, Any?> {
         var map = super.toMap()
         map.put("name", name)

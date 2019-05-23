@@ -1,7 +1,7 @@
 package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
-import framework.models.BaseEntityNamespace
+import framework.models.BaseObject
 import main.helpers.EncryptionHelper
 
 /**
@@ -14,7 +14,7 @@ import main.helpers.EncryptionHelper
 data class CryptoKeyPair(
     val publicKey: String,
     private val _privateKey: String
-): BaseEntityNamespace(publicKey) {
+): BaseObject {
     val privateKey: String
     val _privateKeySalt: String
 

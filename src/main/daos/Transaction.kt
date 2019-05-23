@@ -2,6 +2,8 @@ package main.daos
 
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute
 import framework.models.*
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 
 /**
  * Transaction represents the data that records any changes related to any
@@ -13,7 +15,6 @@ import framework.models.*
  * @property from Address that triggers this transaction
  * @property to Optionally an address this transaction is sending to
  * @property action The action taking place
- * @property previousTransaction Optionally the previous transaction related to this transaction
  * @property metadatas Optionally can be used to keep track of additional data. (ex: max shares)
  * example being: challenge sharing (providence chain)
  */
@@ -22,21 +23,21 @@ class Transaction(
     val to: String,
     val action: Action,
     val amount: Double? = null,
-    val previousTransaction: String? = null,
     val metadatas: Metadatas? = null
-): BaseEntity() {
-    constructor(from: String, to: String, type: ActionType, data: BaseEntityNamespace) :
-        this(from, to, Action(type, data::class.simpleName!!, data.id, data))
+): BaseObject {
+    val createdAt = DateTime.now(DateTimeZone.UTC)
+
+    constructor(from: String, to: String, type: ActionType, data: BaseObject) :
+        this(from, to, Action(type, data::class.simpleName!!, data))
 
     override fun getAttributes(): MutableList<ReplaceableAttribute> {
         var list = super.getAttributes()
         list.add(ReplaceableAttribute("from", from, true))
         list.add(ReplaceableAttribute("to", to, true))
+        list.add(ReplaceableAttribute("createdAt", createdAt.toString(), true))
         list.addAll(action.getAttributes())
         if(amount != null)
             list.add(ReplaceableAttribute("amount", amount.toString(), true))
-        if(previousTransaction != null)
-            list.add(ReplaceableAttribute("previousTransaction", previousTransaction.toString(), true))
         if(metadatas != null)
             list.addAll(metadatas.getAttributes())
         return list
@@ -47,10 +48,9 @@ class Transaction(
         map.put("from", from)
         map.put("to", to)
         map.put("action", action.toMap())
+        map.put("createdAt", createdAt.toString())
         if(amount != null)
             map.put("amount", amount)
-        if(previousTransaction != null)
-            map.put("previousTransactionId", previousTransaction)
         if(metadatas != null)
             map.putAll(metadatas.toMap())
         return map
@@ -75,17 +75,14 @@ data class TransactionWithNewUserNamespace(val transactions: List<Transaction>, 
 data class Action(
     val type: ActionType,
     val dataType: String,
-    val dataId: String?=null,
-    val data: BaseEntityNamespace?=null
-): BaseEntityNamespace() {
+    val data: BaseObject?=null
+): BaseObject {
     override fun toMap(): MutableMap<String, Any?> {
         val map = mutableMapOf<String, Any?>()
         map["type"] = type.toString()
         map["dataType"] = dataType
         if(data != null)
             map["data"] = data
-        if(dataId != null)
-            map["dataId"] = dataId
         return map
     }
 
@@ -96,8 +93,6 @@ data class Action(
         )
         if(data != null)
             list.addAll(data.getAttributes())
-        if(dataId != null)
-            list.add(ReplaceableAttribute("dataId", dataId, true))
         return list
     }
 }

@@ -5,7 +5,7 @@ import main.daos.*
 import kotlinserverless.framework.models.NotFoundException
 
 object GetUserAccountService {
-    fun execute(userId: String? = null, email: String? = null, apiKey: String? = null): UserAccount {
+    fun execute(publicKey: String? = null, email: String? = null, apiKey: String? = null): UserAccount {
         var query = arrayListOf(
             Pair("dataType", UserAccount::class.simpleName!!)
         )
@@ -13,8 +13,8 @@ object GetUserAccountService {
             apiKey != null -> {
                 query.add(Pair("apiKey", apiKey))
             }
-            userId != null -> {
-                query.add(Pair("id", userId))
+            publicKey != null -> {
+                query.add(Pair("publicKey", publicKey))
             }
             email != null -> {
                 query.add(Pair("email", email))
